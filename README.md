@@ -161,6 +161,67 @@ while ($pendingRequest->canContinue) {
 }
 ```
 
+### Getting rid of repetitive setup
+
+When you are dealing with multiple http requests to the same `third-party` api provider, you should be able to notice that you are doing the same set-up in different places. Wrapper objects can come in handy in these scenario.
+
+```php
+// code 1
+$account = auth()->user()->account_id;
+Http::prepare()
+    ->withUrl("https://test.com/api/{$account}/feed")
+    ->withToken($account->token)
+    ->execute('get');
+
+// code 2
+$account = auth()->user()->account;
+Http::prepare()
+    ->withUrl("https://test.com/api/{$account->id}/profile")
+    ->withToken($account->token)
+    ->withBody('email', 'john@example.com')
+    ->execute('patch');
+```
+
+It should be obvious that the two code samples share the same "baseUrl" (`https://test.com/api/{accountId}`) and attach an Authorization header on the request. You can create a separate class to eliminate this redundancy. A wrapper class only needs a `boot` method to work properly.
+
+```php
+use App\Clients;
+use Plmrlnsnts\HttpExtended\PendingRequest;
+
+class TestClient
+{
+    protected $account;
+
+    public function __construct($account)
+    {
+        $this->account = $account;
+    }
+
+    public function boot(PendingRequest $request)
+    {
+        $request->baseUrl('https://test.com/api/' . $this->account->id);
+        $request->withToken($this->account->token);
+    }
+}
+```
+
+We can shorten the previous code sample by passing the wrapper object that we just added to the `prepare` function of our requests.
+
+```php
+use App\Clients\TestClient;
+
+// code 1
+Http::prepare(new TestClient(auth()->user()))
+    ->withUrl('/feed')
+    ->execute('get');
+
+// code 2
+Http::prepare(new TestClient(auth()->user()))
+    ->withUrl('/profile')
+    ->withBody('email', 'john@example.com')
+    ->execute('patch');
+```
+
 ### Testing
 
 ``` bash

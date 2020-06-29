@@ -27,6 +27,8 @@ Feel free to use all the available methods on the existing [http client api](htt
 ``` php
 use Plmrlnsnts\HttpExtended\Http;
 
+// Methods
+
 Http::get('http://test.com', ['foo' => 'bar']);
 
 Http::post('http://test.com', [
@@ -34,12 +36,14 @@ Http::post('http://test.com', [
     'email' => 'john@example.com',
 ]);
 
+// Assertions
+
 Http::fake(fn () => ['fake' => 'response']);
 
 Http::fakeSequence()
     ->push(['first' => 'response'])
     ->push(['second' => 'response'])
-    ->whenEmpty(new Http::response())
+    ->whenEmpty(new Http::response());
 ```
 
 In some cases, you will find yourself passing an **overwhelming number** of "query" or "body" parameters to a request. Here's an example of a `post()` request to [Google My Business Location Insights](https://developers.google.com/my-business/content/insight-data) api.
@@ -191,7 +195,7 @@ class GoogleClient
 {
     protected $googleAccount;
 
-    public const REPORT_INSIGHTS_URL = 'locations:reportInsights';
+    public const REPORT_INSIGHTS_URL = '/accounts/{accountId}/locations:reportInsights';
 
     public function __construct($googleAccount)
     {

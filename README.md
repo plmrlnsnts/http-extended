@@ -1,14 +1,14 @@
 # Laravel Http Client - Extended
 
-Minor improvements to the built-in client library.
+Minor improvements to the built-in http client library.
 
 ```php
 use Plmrlnsnts\HttpExtended\Http;
 
 $response = Http::prepare()
     ->withUrl('https://test.com')
-    ->withQuery('api_key', 'api-key')
-    ->withBody('user.email', 'john@example.com')
+    ->withBody('name', 'John Doe')
+    ->withBody('email', 'john@example.com')
     ->execute('post');
 ```
 
@@ -22,28 +22,27 @@ composer require plmrlnsnts/http-extended
 
 ## Usage
 
-Feel free to use all the available methods of the existing [http client api](https://laravel.com/docs/7.x/http-client#introduction) when using this package, and it will work just fine. Heck you can even **find-and-replace** all the occurence of `Illuminate\Support\Facades\Http` with `Plmrlnsnts\HttpExtended\Http`.
+Feel free to use all the available methods on the existing [http client api](https://laravel.com/docs/7.x/http-client#introduction), and it will work just fine. Heck you can even **find-and-replace** all the occurence of `Illuminate\Support\Facades\Http` with `Plmrlnsnts\HttpExtended\Http`.
 
 ``` php
 use Plmrlnsnts\HttpExtended\Http;
 
 Http::get('http://test.com', ['foo' => 'bar']);
 
-// or
+Http::post('http://test.com', [
+    'name' => 'John Doe',
+    'email' => 'john@example.com',
+]);
 
-Http::prepare()
-    ->withUrl('http://test.com')
-    ->withQuery('foo', 'bar')
-    ->execute('get');
+Http::fake(fn () => ['fake' => 'response']);
 ```
 
-Well for this example, the later version seems overkill 🙄. But for some cases, you will need to pass an **overwhelming number** of "query" or "body" parameters to a request. That's when things can get really nasty. Here's what it would look like when using the `post` method when requesting to [Google My Business Location Insights](https://developers.google.com/my-business/content/insight-data) api.
+In some cases, you will find yourself passing an **overwhelming number** of "query" or "body" parameters to a request. Here's an example of a `post()` request to [Google My Business Location Insights](https://developers.google.com/my-business/content/insight-data) api.
 
 ```php
 use Plmrlnsnts\HttpExtended\Http;
 
-$response = Http::withToken('<access-token>')
-    ->post('<base-url>/locations:reportInsights', [
+$response = Http::post('{baseUrl}/locations:reportInsights', [
         'locationNames' => [
             'accounts/{accountId}/locations/locationId',
         ],
@@ -64,14 +63,13 @@ $response = Http::withToken('<access-token>')
     ]);
 ```
 
-Now, here is another way of constructing the request — *"fluently"*.
+And this how you can construct the request — *"fluently"*, using the package.
 
 ```php
 use Plmrlnsnts\HttpExtended\Http;
 
 $response = Http::prepare()
-    ->withToken('<access-token>')
-    ->withUrl('<base-url>/locations:reportInsights')
+    ->withUrl('{baseUrl}/locations:reportInsights')
     ->withBody('locationNames', ['accounts/{accountId}/locations/locationId'])
     ->withBody('basicRequest.metricRequests.0.metric', 'QUERIES_DIRECT')
     ->withBody('basicRequest.metricRequests.1.metric', 'QUERIES_INDIRECT')
@@ -90,12 +88,12 @@ Accepts an instance of a `wrapper` object (more about this later). You may also 
 
 ```php
 // 😥
-Http::withUrl('http://test.com')
+$response = Http::withUrl('http://test.com')
     ->withQuery('foo', 'bar')
     ->execute('get');
 
 // 🥰
-Http::prepare()
+$response = Http::prepare()
     ->withUrl('http://test.com')
     ->withQuery('foo', 'bar')
     ->execute('get');

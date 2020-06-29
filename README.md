@@ -210,7 +210,7 @@ class GoogleClient
 }
 ```
 
-You can now pass it to the `prepare` method when making http requests to any of the endpoint of Google My Business' api.
+You can now pass it to the `prepare` method when making http requests the same api.
 
 ```php
 $response = Http::prepare(new GoogleClient($account))

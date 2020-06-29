@@ -22,7 +22,7 @@ composer require plmrlnsnts/http-extended
 
 ## Usage
 
-Feel free to use all the available methods on the existing [http client api](https://laravel.com/docs/7.x/http-client#introduction), and it will work just fine. Heck you can even **find-and-replace** all the occurence of `Illuminate\Support\Facades\Http` with `Plmrlnsnts\HttpExtended\Http`.
+Feel free to use all the available methods on the existing [http client api](https://laravel.com/docs/7.x/http-client#introduction). Heck you can even **find-and-replace** all the occurence of `Illuminate\Support\Facades\Http` with `Plmrlnsnts\HttpExtended\Http`, and it will work just fine.
 
 ``` php
 use Plmrlnsnts\HttpExtended\Http;
@@ -35,6 +35,11 @@ Http::post('http://test.com', [
 ]);
 
 Http::fake(fn () => ['fake' => 'response']);
+
+Http::fakeSequence()
+    ->push(['first' => 'response'])
+    ->push(['second' => 'response'])
+    ->whenEmpty(new Http::response())
 ```
 
 In some cases, you will find yourself passing an **overwhelming number** of "query" or "body" parameters to a request. Here's an example of a `post()` request to [Google My Business Location Insights](https://developers.google.com/my-business/content/insight-data) api.
@@ -56,14 +61,14 @@ $response = Http::post('{baseUrl}/locations:reportInsights', [
                 ],
             ],
             'timeRange' => [
-                'startTime' => '2016-10-12T01:01:23.045123456Z',
-                'endTime' => '2017-01-10T23:59:59.045123456Z',
+                'startTime' => '2016-10-12T01:01:23Z',
+                'endTime' => '2017-01-10T23:59:59Z',
             ]
         ]
     ]);
 ```
 
-And this how you can construct the request — *"fluently"*, using the package.
+And this how you can *"fluently"* construct the same request using the package.
 
 ```php
 use Plmrlnsnts\HttpExtended\Http;
@@ -73,14 +78,14 @@ $response = Http::prepare()
     ->withBody('locationNames', ['accounts/{accountId}/locations/locationId'])
     ->withBody('basicRequest.metricRequests.0.metric', 'QUERIES_DIRECT')
     ->withBody('basicRequest.metricRequests.1.metric', 'QUERIES_INDIRECT')
-    ->withBody('basicRequest.timeRange.startTime', '2016-10-12T01:01:23.045123456Z')
-    ->withBody('basicRequest.timeRange.endTime', '2017-01-10T23:59:59.045123456Z')
+    ->withBody('basicRequest.timeRange.startTime', '2016-10-12T01:01:23Z')
+    ->withBody('basicRequest.timeRange.endTime', '2017-01-10T23:59:59Z')
     ->execute('post');
 ```
 
 ### Making Requests
 
-Here are the most common methods that you can use when making http requests:
+This package offers a variety of methods to contruct http requests:
 
 #### prepare($wrapper = null)
 
@@ -99,17 +104,27 @@ $response = Http::prepare()
     ->execute('get');
 ```
 
-#### withQuery(string|array $key, $value = null)
-
-Assigns a parameter to the query. This method supports "dot" notation.
+Did I mention that it works well too with the existing methods?
 
 ```php
-Http::prepare()
-    ->withUrl('http://test.com')
-    ->withQuery('firstName', 'Johnny') // ['firstName' => 'Johnny']
-    ->withQuery(['lastName' => 'Depp']) // ['lastName' => 'Depp']
-    ->withQuery('skills.technical' => ['Pirate']) // ['skills' => ['technical => ['Pirate']]]
-    ->execute('get');
+$response = Http::prepare()
+    ->withToken('yourAccessToken')
+    ->post('http://test.com', ['foo' => 'bar']);
+```
+
+#### withQuery(string|array $key, $value = null)
+
+Assigns a parameter to the query. This method can accept a `key-value` pair or an `array`. It also supports "dot" notation.
+
+```php
+Http::withQuery('firstName', 'Johnny');
+// ['firstName' => 'Johnny']
+
+Http::withQuery(['lastName' => 'Depp']);
+// ['lastName' => 'Depp']
+
+Http::withQuery('skills.technical' => ['Pirate']);
+// ['skills' => ['technical => ['Pirate']]]
 ```
 
 This method can also be used along with `post|put|patch|delete` requests.
@@ -120,6 +135,9 @@ Http::prepare()
     ->withQuery('version', 'v2')
     ->withBody(['name' => 'Johnny Depp'])
     ->execute('post');
+
+// POST http://test.com?version=v2
+// BODY { "name" : "Johnny Depp" }
 ```
 
 #### withBody(string|array $key, $value = null)

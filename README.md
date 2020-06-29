@@ -64,7 +64,7 @@ $response = Http::withToken('<access-token>')
     ]);
 ```
 
-Now, here is another way of constructing the request *"fluently"*.
+Now, here is another way of constructing the request — *"fluently"*.
 
 ```php
 use Plmrlnsnts\HttpExtended\Http;
@@ -78,6 +78,27 @@ $response = Http::prepare()
     ->withBody('basicRequest.timeRange.startTime', '2016-10-12T01:01:23.045123456Z')
     ->withBody('basicRequest.timeRange.endTime', '2017-01-10T23:59:59.045123456Z')
     ->execute('post');
+```
+
+#### Making Requests
+
+Here are the available methods that you can use when making requests:
+
+##### prepare($wrapper = null)
+
+Accepts an instance of a `wrapper` object (more about this later). You may also call this method without any arguments just for the sake of aligning the rest of the method chain.
+
+```php
+// 😥
+Http::withUrl('http://test.com')
+    ->withQuery('foo', 'bar')
+    ->execute('get');
+
+// 🥰
+Http::prepare()
+    ->withUrl('http://test.com')
+    ->withQuery('foo', 'bar')
+    ->execute('get');
 ```
 
 ### Testing

@@ -171,7 +171,7 @@ $pendingRequest = Http::prepare()
     ->withQuery('offset', 0)
     ->withQuery('limit', 100)
     ->afterSending(function (PendingRequest $request, Response $response) {
-        $request->incrementQuery('page', 100);
+        $request->incrementQuery('offset', 100);
         $request->canContinue = ! empty(data_get($response, 'data'));
     });
 

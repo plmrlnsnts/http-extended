@@ -82,7 +82,7 @@ $response = Http::prepare()
 
 ### Making Requests
 
-Here are the available methods that you can use when making http requests:
+Here are the most common methods that you can use when making http requests:
 
 #### prepare($wrapper = null)
 
@@ -99,6 +99,66 @@ Http::prepare()
     ->withUrl('http://test.com')
     ->withQuery('foo', 'bar')
     ->execute('get');
+```
+
+#### withQuery(string|array $key, $value = null)
+
+Assigns a parameter to the query. This method supports "dot" notation.
+
+```php
+Http::prepare()
+    ->withUrl('http://test.com')
+    ->withQuery('firstName', 'Johnny') // ['firstName' => 'Johnny']
+    ->withQuery(['lastName' => 'Depp']) // ['lastName' => 'Depp']
+    ->withQuery('skills.technical' => ['Pirate']) // ['skills' => ['technical => ['Pirate']]]
+    ->execute('get');
+```
+
+This method can also be used along with `post|put|patch|delete` requests.
+
+```php
+Http::prepare()
+    ->withUrl('http://test.com')
+    ->withQuery('version', 'v2')
+    ->withBody(['name' => 'Johnny Depp'])
+    ->execute('post');
+```
+
+#### withBody(string|array $key, $value = null)
+
+Assigns a parameter to the request body. This method supports "dot" notation.
+
+```php
+Http::prepare()
+    ->withUrl('http://test.com')
+    ->withBody('firstName', 'Johnny') // ['firstName' => 'Johnny']
+    ->withBody(['lastName' => 'Depp']) // ['lastName' => 'Depp']
+    ->withBody('skills.technical' => ['Pirate']) // ['skills' => ['technical => ['Pirate']]]
+    ->execute('post');
+```
+
+#### afterSending(callable $callback)
+
+A method that accepts a `function` to add a little bit of logic when a request has finished. Particulary useful when dealing with paginated result set.
+
+```php
+use Illuminate\Http\Client\Response;
+use Plmrlnsnts\HttpExtended\Http;
+use Plmrlnsnts\HttpExtended\PendingRequest;
+
+$pendingRequest = Http::prepare()
+    ->withUrl('http://test.com')
+    ->withQuery('page', 1)
+    ->withQuery('perPage', 100)
+    ->afterSending(function (PendingRequest $request, Response $response) {
+        $rows = data_get($response, 'data', []);
+        $request->canContinue = ! empty($rows);
+        $request->incrementQuery('page', 1);
+    });
+
+while ($pendingRequest->canContinue) {
+    $response = $pendingRequest->execute('get');
+}
 ```
 
 ### Testing

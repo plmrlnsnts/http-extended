@@ -1,0 +1,44 @@
+{
+    "name": "plmrlnsnts/http-extended",
+    "description": "",
+    "keywords": [
+        "plmrlnsnts",
+        "http-extended"
+    ],
+    "homepage": "https://github.com/plmrlnsnts/http-extended",
+    "license": "MIT",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Paul Santos",
+            "email": "paulmarlonsantos@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^7.2.5",
+        "illuminate/support": "^7.0"
+    },
+    "require-dev": {
+        "guzzlehttp/guzzle": "^6.3",
+        "orchestra/testbench": "^5.0",
+        "phpunit/phpunit": "^8.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Plmrlnsnts\\HttpExtended\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Plmrlnsnts\\HttpExtended\\Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit",
+        "test-coverage": "vendor/bin/phpunit --coverage-html coverage"
+    },
+    "config": {
+        "sort-packages": true
+    }
+}

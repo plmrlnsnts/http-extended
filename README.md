@@ -106,7 +106,7 @@ $response = Http::prepare()
     ->execute('get');
 ```
 
-Did I mention that it works with other methods as well?
+Did I mention that it works for other methods as well?
 
 ```php
 $response = Http::prepare()
@@ -144,7 +144,7 @@ Http::prepare()
 
 #### withBody(string|array $key, $value = null)
 
-Assigns a valye to the "request body". This method can accept a `key-value` pair or an `array`. It also supports "dot" notation.
+Assigns a value to the "request body". This method can accept a `key-value` pair or an `array`. It also supports "dot" notation.
 
 ```php
 Http::withBody('firstName', 'Johnny');

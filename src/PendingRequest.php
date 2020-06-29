@@ -84,16 +84,16 @@ class PendingRequest extends \Illuminate\Http\Client\PendingRequest
 
     public function execute($method): Response
     {
-        $options = [
-            'query' => $this->extOptions['query']
-        ];
+        $method = strtoupper($method);
+
+        $options = ['query' => $this->extOptions['query']];
 
         if (! in_array($method, ['GET', 'HEAD'])) {
             $options[$this->bodyFormat] = $this->extOptions['body'];
         }
 
         return tap($this->send(
-            strtoupper($method),
+            $method,
             $this->extOptions['url'],
             $options
         ), function ($response) {

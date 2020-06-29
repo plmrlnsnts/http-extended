@@ -104,7 +104,7 @@ $response = Http::prepare()
     ->execute('get');
 ```
 
-Did I mention that it works well too with the existing methods?
+Did I mention that it works with the other methods as well?
 
 ```php
 $response = Http::prepare()
@@ -114,7 +114,7 @@ $response = Http::prepare()
 
 #### withQuery(string|array $key, $value = null)
 
-Assigns a parameter to the query. This method can accept a `key-value` pair or an `array`. It also supports "dot" notation.
+Assigns a parameter to the "query". This method can accept a `key-value` pair or an `array`. It also supports "dot" notation.
 
 ```php
 Http::withQuery('firstName', 'Johnny');
@@ -142,20 +142,22 @@ Http::prepare()
 
 #### withBody(string|array $key, $value = null)
 
-Assigns a parameter to the request body. This method supports "dot" notation.
+Assigns a parameter to the "request body". This method can accept a `key-value` pair or an `array`. It also supports "dot" notation.
 
 ```php
-Http::prepare()
-    ->withUrl('http://test.com')
-    ->withBody('firstName', 'Johnny') // ['firstName' => 'Johnny']
-    ->withBody(['lastName' => 'Depp']) // ['lastName' => 'Depp']
-    ->withBody('skills.technical' => ['Pirate']) // ['skills' => ['technical => ['Pirate']]]
-    ->execute('post');
+Http::withBody('firstName', 'Johnny');
+// ['firstName' => 'Johnny']
+
+Http::withBody(['lastName' => 'Depp']);
+// ['lastName' => 'Depp']
+
+Http::withBody('skills.technical' => ['Pirate']);
+// ['skills' => ['technical => ['Pirate']]]
 ```
 
 #### afterSending(callable $callback)
 
-A method that accepts a `function` to add a little bit of logic when a request has finished. Particulary useful when dealing with paginated result set.
+A method that accepts a `callable` to add a little bit of logic when a request has finished. Particulary useful when dealing with paginated result set.
 
 ```php
 use Illuminate\Http\Client\Response;
@@ -179,63 +181,46 @@ while ($pendingRequest->canContinue) {
 
 ### Wrapper objects
 
-When you are dealing with a number of http requests from the same third-party api provider, you should be able to notice that you are doing the same set-up in multiple places. You can reach out to wrapper objects for this particular scenario.
+There could be a time when you have to perform a similar set-up on multiple requests, but you want to encapsulate this logic in one place. This is where wrapper objects (please help me think of a better name) can get in handy. Simply create a class with a `boot` method that accepts an instance of a `PendingRequest`, and you're good to go. Here's an example:
 
 ```php
-// code 1
-$account = auth()->user();
-Http::prepare()
-    ->withUrl("https://test.com/api/{$account->id}/feed")
-    ->withToken($account->token)
-    ->execute('get');
-
-// code 2
-$account = auth()->user();
-Http::prepare()
-    ->withUrl("https://test.com/api/{$account->id}/profile")
-    ->withToken($account->token)
-    ->withBody('email', 'john@example.com')
-    ->execute('patch');
-```
-
-It should be obvious that the two code samples share the same "baseUrl" (`https://test.com/api/{accountId}`) and attach an Authorization header on the request. You can create a separate class to eliminate this redundancy. A wrapper class only needs a `boot` method to work properly.
-
-```php
-use App\Clients;
+use App\HttpClients;
 use Plmrlnsnts\HttpExtended\PendingRequest;
 
-class TestClient
+class GoogleClient
 {
-    protected $account;
+    protected $googleAccount;
 
-    public function __construct($account)
+    public const REPORT_INSIGHTS_URL = 'locations:reportInsights';
+
+    public function __construct($googleAccount)
     {
-        $this->account = $account;
+        $this->googleAccount = $googleAccount;
     }
 
     public function boot(PendingRequest $request)
     {
-        $request->baseUrl('https://test.com/api/' . $this->account->id);
+        if ($this->googleAccount->tokenExpired()) {
+            $this->googleAccount->refreshToken();
+        }
+
+        $request->baseUrl('https://mybusiness.googleapis.com/v4');
         $request->withToken($this->account->token);
     }
 }
 ```
 
-We can shorten the previous code sample by passing the wrapper object that we just added to the `prepare` function of our requests.
+You can now pass it to the `prepare` method when making http requests to any of the endpoint of Google My Business' api.
 
 ```php
-use App\Clients\TestClient;
-
-// code 1
-Http::prepare(new TestClient(auth()->user()))
-    ->withUrl('/feed')
-    ->execute('get');
-
-// code 2
-Http::prepare(new TestClient(auth()->user()))
-    ->withUrl('/profile')
-    ->withBody('email', 'john@example.com')
-    ->execute('patch');
+$response = Http::prepare(new GoogleClient($account))
+    ->withUrl(GoogleClient::REPORT_INSIGHTS_URL)
+    -->withBody('locationNames', ['accounts/{accountId}/locations/locationId'])
+    ->withBody('basicRequest.metricRequests.0.metric', 'QUERIES_DIRECT')
+    ->withBody('basicRequest.metricRequests.1.metric', 'QUERIES_INDIRECT')
+    ->withBody('basicRequest.timeRange.startTime', '2016-10-12T01:01:23Z')
+    ->withBody('basicRequest.timeRange.endTime', '2017-01-10T23:59:59Z')
+    ->execute('post');
 ```
 
 ### Testing

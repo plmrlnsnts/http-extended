@@ -22,7 +22,7 @@ composer require plmrlnsnts/http-extended "^0.1"
 
 ## Usage
 
-Feel free to use all the available methods on the existing [http client api](https://laravel.com/docs/7.x/http-client#introduction). Heck you can even **find-and-replace** all the occurence of `Illuminate\Support\Facades\Http` with `Plmrlnsnts\HttpExtended\Http`, and it will work just fine.
+Feel free to use all the available methods on existing [http client api](https://laravel.com/docs/7.x/http-client#introduction). Heck you can even **find-and-replace** all the occurence of `Illuminate\Support\Facades\Http` with `Plmrlnsnts\HttpExtended\Http`, and it will work just fine.
 
 ``` php
 use Plmrlnsnts\HttpExtended\Http;

@@ -64,7 +64,7 @@ $response = Http::withToken('<access-token>')
     ]);
 ```
 
-Now, here is another way of constructing the request using the fluent interface provided by this package.
+Now, here is another way of constructing the request *"fluently"*.
 
 ```php
 use Plmrlnsnts\HttpExtended\Http;

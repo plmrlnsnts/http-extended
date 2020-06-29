@@ -161,20 +161,20 @@ while ($pendingRequest->canContinue) {
 }
 ```
 
-### Getting rid of repetitive setup
+### Wrapper objects
 
-When you are dealing with multiple http requests to the same `third-party` api provider, you should be able to notice that you are doing the same set-up in different places. Wrapper objects can come in handy in these scenario.
+When you are dealing with a number of http requests from the same third-party api provider, you should be able to notice that you are doing the same set-up in multiple places. You can reach out to wrapper objects for this particular scenario.
 
 ```php
 // code 1
-$account = auth()->user()->account_id;
+$account = auth()->user();
 Http::prepare()
-    ->withUrl("https://test.com/api/{$account}/feed")
+    ->withUrl("https://test.com/api/{$account->id}/feed")
     ->withToken($account->token)
     ->execute('get');
 
 // code 2
-$account = auth()->user()->account;
+$account = auth()->user();
 Http::prepare()
     ->withUrl("https://test.com/api/{$account->id}/profile")
     ->withToken($account->token)

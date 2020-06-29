@@ -215,7 +215,7 @@ You can now pass it to the `prepare` method when making http requests to any of 
 ```php
 $response = Http::prepare(new GoogleClient($account))
     ->withUrl(GoogleClient::REPORT_INSIGHTS_URL)
-    -->withBody('locationNames', ['accounts/{accountId}/locations/locationId'])
+    ->withBody('locationNames', ['accounts/{accountId}/locations/locationId'])
     ->withBody('basicRequest.metricRequests.0.metric', 'QUERIES_DIRECT')
     ->withBody('basicRequest.metricRequests.1.metric', 'QUERIES_INDIRECT')
     ->withBody('basicRequest.timeRange.startTime', '2016-10-12T01:01:23Z')

@@ -17,7 +17,7 @@ $response = Http::prepare()
 You can install the package via composer:
 
 ```bash
-composer require plmrlnsnts/http-extended
+composer require plmrlnsnts/http-extended "^0.1"
 ```
 
 ## Usage

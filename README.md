@@ -52,24 +52,22 @@ In some cases, you will find yourself passing an **overwhelming number** of "que
 use Plmrlnsnts\HttpExtended\Http;
 
 $response = Http::post('{baseUrl}/locations:reportInsights', [
-        'locationNames' => [
-            'accounts/{accountId}/locations/locationId',
-        ],
-        'basicRequest' => [
-            'metricRequests' => [
-                [
-                    'metric' => 'QUERIES_DIRECT',
-                ],
-                [
-                    'metric' => 'QUERIES_INDIRECT',
-                ],
+    'locationNames' => ['accounts/{accountId}/locations/locationId'],
+    'basicRequest' => [
+        'metricRequests' => [
+            [
+                'metric' => 'QUERIES_DIRECT',
             ],
-            'timeRange' => [
-                'startTime' => '2016-10-12T01:01:23Z',
-                'endTime' => '2017-01-10T23:59:59Z',
-            ]
+            [
+                'metric' => 'QUERIES_INDIRECT',
+            ],
+        ],
+        'timeRange' => [
+            'startTime' => '2016-10-12T01:01:23Z',
+            'endTime' => '2017-01-10T23:59:59Z',
         ]
-    ]);
+    ]
+]);
 ```
 
 And this how you can *"fluently"* construct the same request using the package.

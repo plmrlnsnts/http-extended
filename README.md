@@ -171,9 +171,8 @@ $pendingRequest = Http::prepare()
     ->withQuery('page', 1)
     ->withQuery('perPage', 100)
     ->afterSending(function (PendingRequest $request, Response $response) {
-        $rows = data_get($response, 'data', []);
-        $request->canContinue = ! empty($rows);
         $request->incrementQuery('page', 1);
+        $request->canContinue = ! empty(data_get($response, 'data'));
     });
 
 while ($pendingRequest->canContinue) {

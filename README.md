@@ -168,10 +168,10 @@ use Plmrlnsnts\HttpExtended\PendingRequest;
 
 $pendingRequest = Http::prepare()
     ->withUrl('http://test.com')
-    ->withQuery('page', 1)
-    ->withQuery('perPage', 100)
+    ->withQuery('offset', 0)
+    ->withQuery('limit', 100)
     ->afterSending(function (PendingRequest $request, Response $response) {
-        $request->incrementQuery('page', 1);
+        $request->incrementQuery('page', 100);
         $request->canContinue = ! empty(data_get($response, 'data'));
     });
 

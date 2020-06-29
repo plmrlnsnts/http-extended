@@ -80,11 +80,11 @@ $response = Http::prepare()
     ->execute('post');
 ```
 
-#### Making Requests
+### Making Requests
 
-Here are the available methods that you can use when making requests:
+Here are the available methods that you can use when making http requests:
 
-##### prepare($wrapper = null)
+#### prepare($wrapper = null)
 
 Accepts an instance of a `wrapper` object (more about this later). You may also call this method without any arguments just for the sake of aligning the rest of the method chain.
 

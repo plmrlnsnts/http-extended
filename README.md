@@ -37,13 +37,13 @@ Http::prepare()
     ->execute('get');
 ```
 
-Well for this example, the later version seems overkill 🙄. But for some cases, you will need to pass an **overwhelming number** of "query" or "body" parameters to a request. That's when things can get really nasty. Here's what it would look like when using the `post` method when requesting to [Google My Business Location Insights api](https://developers.google.com/my-business/content/insight-data).
+Well for this example, the later version seems overkill 🙄. But for some cases, you will need to pass an **overwhelming number** of "query" or "body" parameters to a request. That's when things can get really nasty. Here's what it would look like when using the `post` method when requesting to [Google My Business Location Insights](https://developers.google.com/my-business/content/insight-data) api.
 
 ```php
 use Plmrlnsnts\HttpExtended\Http;
 
-$response = Http::withToken('google-access-token')
-    ->post('https://business.googleapis.com/v4/accounts/{accountId}/locations:reportInsights', [
+$response = Http::withToken('<access-token>')
+    ->post('<base-url>/locations:reportInsights', [
         'locationNames' => [
             'accounts/{accountId}/locations/locationId',
         ],
@@ -64,14 +64,14 @@ $response = Http::withToken('google-access-token')
     ]);
 ```
 
-Now, here is another way of constructing the request using a fluent interface provided by this package.
+Now, here is another way of constructing the request using the fluent interface provided by this package.
 
 ```php
 use Plmrlnsnts\HttpExtended\Http;
 
 $response = Http::prepare()
-    ->withToken('google-access-token')
-    ->withUrl('https://business.googleapis.com/v4/accounts/{accountId}/locations:reportInsights')
+    ->withToken('<access-token>')
+    ->withUrl('<base-url>/locations:reportInsights')
     ->withBody('locationNames', ['accounts/{accountId}/locations/locationId'])
     ->withBody('basicRequest.metricRequests.0.metric', 'QUERIES_DIRECT')
     ->withBody('basicRequest.metricRequests.1.metric', 'QUERIES_INDIRECT')

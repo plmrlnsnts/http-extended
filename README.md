@@ -36,7 +36,7 @@ Http::post('http://test.com', [
     'email' => 'john@example.com',
 ]);
 
-// Assertions
+// Testing
 
 Http::fake(fn () => ['fake' => 'response']);
 

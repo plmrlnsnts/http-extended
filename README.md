@@ -87,7 +87,7 @@ $response = Http::prepare()
 
 ### Making Requests
 
-This package offers a variety of methods to contruct http requests:
+This package offers a variety of methods to construct http requests:
 
 #### prepare($wrapper = null)
 
